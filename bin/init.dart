@@ -87,7 +87,7 @@ Future<void> main(List<String> args) async {
   Process.run("flutter", ["pub", "get"]);
 
   // ADD SERVICE
-  String serviceContent = File("$servicePath/api_client.dart").readAsStringSync();
+  String serviceContent = File("$servicePath/api_client.dart.stub").readAsStringSync();
   String serviceFile = "$serviceAppPath/api_client.dart";
   if (!Directory(serviceAppPath).existsSync()) {
     print("CREATE FOLDER => $serviceAppPath");
@@ -137,7 +137,7 @@ Future<void> main(List<String> args) async {
   File(kFile).writeAsStringSync(kContent);
 
   // ADD HELPER
-  String helperContent = File("$othersPath/utils/helper.dart").readAsStringSync();
+  String helperContent = File("$othersPath/utils/helper.dart.stub").readAsStringSync();
   String helperFile = "$libAppPath/utils/helper.dart";
   if (!Directory("$libAppPath/utils").existsSync()) {
     print("CREATE FOLDER => $libAppPath/utils");
@@ -147,7 +147,7 @@ Future<void> main(List<String> args) async {
   File(helperFile).writeAsStringSync(helperContent.replaceAll("appName", appName));
 
   // ADD LOADING WIDGET
-  String loadingContent = File("$othersPath/widget/loading_widget.dart").readAsStringSync();
+  String loadingContent = File("$othersPath/widget/loading_widget.dart.stub").readAsStringSync();
   String loadingFile = "$libAppPath/widget/loading_widget.dart";
   if (!Directory("$libAppPath/widget").existsSync()) {
     print("CREATE FOLDER => $libAppPath/widget");
@@ -157,7 +157,7 @@ Future<void> main(List<String> args) async {
   File(loadingFile).writeAsStringSync(loadingContent.replaceAll("appName", appName));
 
   // ADD SHIMMER WIDGET
-  String shimmerContent = File("$othersPath/widget/shimmer_list_widget.dart").readAsStringSync();
+  String shimmerContent = File("$othersPath/widget/shimmer_list_widget.dart.stub").readAsStringSync();
   String shimmerFile = "$libAppPath/widget/shimmer_list_widget.dart";
   if (!Directory("$libAppPath/widget").existsSync()) {
     print("CREATE FOLDER => $libAppPath/widget");
@@ -167,7 +167,7 @@ Future<void> main(List<String> args) async {
   File(shimmerFile).writeAsStringSync(shimmerContent);
 
   // ADD SNACKBAR WIDGET
-  String snackbarContent = File("$othersPath/widget/show_snackbar.dart").readAsStringSync();
+  String snackbarContent = File("$othersPath/widget/show_snackbar.dart.stub").readAsStringSync();
   String snackbarFile = "$libAppPath/widget/show_snackbar.dart";
   if (!Directory("$libAppPath/widget").existsSync()) {
     print("CREATE FOLDER => $libAppPath/widget");
@@ -177,7 +177,7 @@ Future<void> main(List<String> args) async {
   File(snackbarFile).writeAsStringSync(snackbarContent);
 
   // ADD MAIN DEVELOPMENT
-  String mainContent = File("$othersPath/main.dart").readAsStringSync();
+  String mainContent = File("$othersPath/main.dart.stub").readAsStringSync();
   String mainDevelopmentFile = "$libAppPath/main_development.dart";
   String mainStagingFile = "$libAppPath/main_staging.dart";
   String mainProductionFile = "$libAppPath/main_production.dart";
@@ -189,7 +189,7 @@ Future<void> main(List<String> args) async {
   File(mainProductionFile).writeAsStringSync(mainContent.replaceAll("appName", appName).replaceAll("development", "production"));
 
   // ADD APP
-  String appContent = File("$othersPath/app.dart").readAsStringSync();
+  String appContent = File("$othersPath/app.dart.stub").readAsStringSync();
   String appFile = "$libAppPath/app/app.dart";
   if (!Directory("$libAppPath/app").existsSync()) {
     print("CREATE FOLDER => $libAppPath/app");
@@ -204,10 +204,11 @@ Future<void> main(List<String> args) async {
     Directory(routerAppPath).createSync(recursive: true);
   }
 
-  String routeContent = File("$othersPath/route/route.constant.dart").readAsStringSync();
+  String routeContent = File("$othersPath/route/route.constant.dart.stub").readAsStringSync();
   String routeFile = "$routerAppPath/route.constant.dart";
   File(routeFile).writeAsStringSync(routeContent);
-  String routerGeneratorContent = File("$othersPath/route/route.pages.dart").readAsStringSync();
+
+  String routerGeneratorContent = File("$othersPath/route/route.pages.dart.stub").readAsStringSync();
   String routerGeneratorFile = "$routerAppPath/route.pages.dart";
   File(routerGeneratorFile).writeAsStringSync(routerGeneratorContent.replaceAll("appName", appName));
 
