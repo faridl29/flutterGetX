@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:haibarrr/model/my_fonts.dart';
 import 'package:json2yaml/json2yaml.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
@@ -64,6 +65,7 @@ Future<void> main(List<String> args) async {
     pubSpec["dependencies"][e.name] = e.version;
   }
 
+  // CREATE PUBSPEC ASSETS
   if (!pubSpec["flutter"].containsKey("assets")) {
     pubSpec["flutter"]["assets"] = [];
   }
@@ -74,6 +76,35 @@ Future<void> main(List<String> args) async {
     pubSpec["flutter"]["assets"].add("assets/images/icons/");
   }
 
+  // CREATE PUBSPEC FONTS
+  if (!pubSpec["flutter"].containsKey("fonts")) {
+    pubSpec["flutter"]["fonts"] = [];
+  }
+  var fontsJson = pubSpec["flutter"]["fonts"];
+  List<dynamic> fontsListJson = (fontsJson ?? []) as List<dynamic>;
+  var fontsData  = fontsListJson.map((e) => Fonts.fromJson(e)).toList();
+
+  if (!(fontsData.isNotEmpty && (fontsData.first.family??"").contains("Roboto"))){
+    fontsJson.add(Fonts(
+      family: "Roboto",
+      fontis: [
+        Fontis(asset: "fonts/Roboto-Thin.ttf", weight: 200),
+        Fontis(asset: "fonts/Roboto-Light.ttf", weight: 200),
+        Fontis(asset: "fonts/Roboto-Regular.ttf", weight: 200),
+        Fontis(asset: "fonts/Roboto-Medium.ttf", weight: 300),
+        Fontis(asset: "fonts/Roboto-Bold.ttf", weight: 600),
+        Fontis(asset: "fonts/Roboto-Italic.ttf", style: "italic"),
+      ]
+    ).toJson());
+  }
+
+  // CREATE DIR FONTS
+  if (!Directory("$appRootFolder/fonts").existsSync()) {
+    print("CREATE FOLDER => $appRootFolder/fonts");
+    Directory("$appRootFolder/fonts").createSync(recursive: true);
+  }
+
+  // CREATE DIR ASSETS
   if (!Directory("$appRootFolder/assets/images").existsSync()) {
     print("CREATE FOLDER => $appRootFolder/assets/images");
     Directory("$appRootFolder/assets/images").createSync(recursive: true);
