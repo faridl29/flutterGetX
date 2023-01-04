@@ -3,20 +3,20 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:appName/app/app.dart';
-import 'package:appName/constants/canoncial_path.dart';
 import 'package:appName/feature/example/argument/example_argument.dart';
 import 'package:appName/feature/example/model/example_model.dart';
-import 'package:appName/widget/show_snackbar.dart';
+import 'package:appName/core/base/base.controller.dart';
+import 'package:appName/repository/example_repository.dart';
 
-class ExampleController extends GetxController {
-  var isLoading = true.obs;
-  var isError = false.obs;
-  var errMsg = "".obs;
-  var exampleData = <ExampleModel>[].obs;
-  ExampleArgument? exampleArgument;
+class ExampleController extends BaseController {
+  final ExampleRepository exampleRepository = Get.find(tag: (ExampleRepository).toString());
+    ExampleArgument? exampleArgument;
 
-  Dio dio = Dio();
+    final RxList<ExampleModel> _exampleListController =
+    RxList.empty();
+
+    List<ExampleModel> get exampleList =>
+        _exampleListController.toList();
 
   @override
   void onInit() {
@@ -37,22 +37,16 @@ class ExampleController extends GetxController {
     super.onClose();
   }
 
-  /*Future<List<ExampleModel>> getExampleData() async {
-    isLoading(true);
-    try {
-      final result = await myApiClient.getData(CanonicalPath.EXAMPLE);
-      var dataJson = jsonDecode(result.toString());
-      List<dynamic> data = (dataJson["data"] ?? []) as List<dynamic>;
-      isLoading(false);
-      isError(false);
-      exampleData.value = data.map((e) => ExampleModel.fromMap(e)).toList();
-      return exampleData;
-    } catch (e) {
-      isLoading(false);
-      isError(true);
-      errMsg(e.toString());
-      showSnackbar(message: errMsg.value);
-      throw Exception(e);
-    }
+  /*void getExampleData(){
+    var exampleDataService = exampleRepository.getDataFromApi();
+
+    callDataService(
+      exampleDataService,
+      onSuccess: _handleDataExampleList
+    );
+  }
+
+  void _handleDataExampleList(List<YourModelList> yourModelList){
+    _exampleListController(yourModelList);
   }*/
 }

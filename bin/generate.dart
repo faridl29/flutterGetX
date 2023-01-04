@@ -57,9 +57,11 @@ Future<void> main(List<String> args) async {
 
   String libPath = "$location/lib";
   String templatePath = "$libPath/template/feature/example";
+  String repositoryPath = "$libPath/template/repository";
   String featureAppPath = "$appRootFolder/lib/feature/${rc.snakeCase}";
   String commonAppPath = "$appRootFolder/lib";
   String routerAppPath = "$commonAppPath/route";
+  String repositoryAppPath = "$commonAppPath/repository";
   var list = await dirContents(Directory(templatePath));
   for (var element in list) {
     // CREATE DIRECTORY
@@ -78,6 +80,21 @@ Future<void> main(List<String> args) async {
       // break;
     }
   }
+
+  //CREATE REPOSITORY
+  if (!Directory(repositoryAppPath).existsSync()) {
+    print("CREATE FOLDER => $repositoryAppPath");
+    Directory(repositoryAppPath).createSync(recursive: true);
+  }
+
+  String repositoryContent = await createFile("$repositoryPath/example_repository.dart", rc, appName);
+  String repositoryFile = "$repositoryAppPath/${rc.snakeCase}_repository.dart";
+  if (!Directory(repositoryAppPath).existsSync()) {
+    print("CREATE FOLDER => $repositoryAppPath");
+    Directory(repositoryAppPath).createSync(recursive: true);
+  }
+  print("Create File Repository $repositoryFile");
+  File(repositoryFile).writeAsStringSync(repositoryContent);
 
   // APPEND ROUTE CONSTANT
   String routerAppendContent = "static const ${rc.camelCase} = '/${rc.snakeCase}';";

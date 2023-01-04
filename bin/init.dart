@@ -52,9 +52,11 @@ Future<void> main(List<String> args) async {
   String libPath = "$location/lib";
   String servicePath = "$libPath/template/services";
   String constantPath = "$libPath/template/constants";
+  String corePath = "$libPath/template/core";
   String othersPath = "$libPath/template";
   String serviceAppPath = "$appRootFolder/lib/services";
   String constantAppPath = "$appRootFolder/lib/constants";
+  String coreAppPath = "$appRootFolder/lib/core";
   String libAppPath = "$appRootFolder/lib";
   String routerAppPath = "$libAppPath/route";
   var pubSpec = jsonDecode(jsonEncode(doc));
@@ -136,42 +138,122 @@ Future<void> main(List<String> args) async {
   print("Create File K $kFile");
   File(kFile).writeAsStringSync(kContent);
 
+  // ADD BASE CONTROLLER
+  String baseControllerContent = File("$corePath/base/base.controller.dart.stub").readAsStringSync();
+  String baseControllerFile = "$coreAppPath/base/base.controller.dart";
+  if (!Directory("$coreAppPath/base").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/base");
+    Directory("$coreAppPath/base").createSync(recursive: true);
+  }
+  print("Create File Helper $baseControllerFile");
+  File(baseControllerFile).writeAsStringSync(baseControllerContent.replaceAll("appName", appName));
+
+  // ADD BASE VIEW
+  String baseViewContent = File("$corePath/base/base.view.dart.stub").readAsStringSync();
+  String baseViewFile = "$coreAppPath/base/base.view.dart";
+  if (!Directory("$coreAppPath/base").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/base");
+    Directory("$coreAppPath/base").createSync(recursive: true);
+  }
+  print("Create File Helper $baseViewFile");
+  File(baseViewFile).writeAsStringSync(baseViewContent.replaceAll("appName", appName));
+
+  // ADD MODEL BASE
+  String modelBaseContent = File("$corePath/model/page.state.dart").readAsStringSync();
+  String modelBaseFile = "$coreAppPath/model/page.state.dart";
+  if (!Directory("$coreAppPath/model").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/model");
+    Directory("$coreAppPath/model").createSync(recursive: true);
+  }
+  print("Create File Helper $modelBaseFile");
+  File(modelBaseFile).writeAsStringSync(modelBaseContent);
+
+  // ADD COLOR VALUES
+  String appColorContent = File("$corePath/values/app_colors.dart").readAsStringSync();
+  String appColorFile = "$coreAppPath/values/app_colors.dart";
+  if (!Directory("$coreAppPath/values").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/values");
+    Directory("$coreAppPath/values").createSync(recursive: true);
+  }
+  print("Create File Helper $appColorFile");
+  File(appColorFile).writeAsStringSync(appColorContent);
+
+  // ADD VALUES
+  String appValuesContent = File("$corePath/values/app_values.dart").readAsStringSync();
+  String appValuesFile = "$coreAppPath/values/app_values.dart";
+  if (!Directory("$coreAppPath/values").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/values");
+    Directory("$coreAppPath/values").createSync(recursive: true);
+  }
+  print("Create File Helper $appValuesFile");
+  File(appValuesFile).writeAsStringSync(appValuesContent);
+
+  // ADD TEXT STYLES VALUES
+  String textStylesContent = File("$corePath/values/text_styles.dart.stub").readAsStringSync();
+  String textStylesFile = "$coreAppPath/values/text_styles.dart";
+  if (!Directory("$coreAppPath/values").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/values");
+    Directory("$coreAppPath/values").createSync(recursive: true);
+  }
+  print("Create File Helper $textStylesFile");
+  File(textStylesFile).writeAsStringSync(textStylesContent.replaceAll("appName", appName));
+
   // ADD HELPER
-  String helperContent = File("$othersPath/utils/helper.dart.stub").readAsStringSync();
-  String helperFile = "$libAppPath/utils/helper.dart";
-  if (!Directory("$libAppPath/utils").existsSync()) {
-    print("CREATE FOLDER => $libAppPath/utils");
-    Directory("$libAppPath/utils").createSync(recursive: true);
+  String helperContent = File("$corePath/utils/helper.dart.stub").readAsStringSync();
+  String helperFile = "$coreAppPath/utils/helper.dart";
+  if (!Directory("$coreAppPath/utils").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/utils");
+    Directory("$coreAppPath/utils").createSync(recursive: true);
   }
   print("Create File Helper $helperFile");
   File(helperFile).writeAsStringSync(helperContent.replaceAll("appName", appName));
 
+  // ADD APPBAR WIDGET
+  String appBarContent = File("$corePath/widget/app_bar_title.dart.stub").readAsStringSync();
+  String appBarFile = "$coreAppPath/widget/app_bar_title.dart";
+  if (!Directory("$coreAppPath/widget").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/widget");
+    Directory("$coreAppPath/widget").createSync(recursive: true);
+  }
+  // print("Create File Loading Widget $loadingFile");
+  File(appBarFile).writeAsStringSync(appBarContent.replaceAll("appName", appName));
+
+  // ADD CUSTOM APPBAR WIDGET
+  String customAppBarContent = File("$corePath/widget/custom_app_bar.dart.stub").readAsStringSync();
+  String customAppBarFile = "$coreAppPath/widget/custom_app_bar.dart";
+  if (!Directory("$coreAppPath/widget").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/widget");
+    Directory("$coreAppPath/widget").createSync(recursive: true);
+  }
+  // print("Create File Loading Widget $loadingFile");
+  File(customAppBarFile).writeAsStringSync(customAppBarContent.replaceAll("appName", appName));
+
   // ADD LOADING WIDGET
-  String loadingContent = File("$othersPath/widget/loading_widget.dart.stub").readAsStringSync();
-  String loadingFile = "$libAppPath/widget/loading_widget.dart";
-  if (!Directory("$libAppPath/widget").existsSync()) {
-    print("CREATE FOLDER => $libAppPath/widget");
-    Directory("$libAppPath/widget").createSync(recursive: true);
+  String loadingContent = File("$corePath/widget/loading_widget.dart.stub").readAsStringSync();
+  String loadingFile = "$coreAppPath/widget/loading_widget.dart";
+  if (!Directory("$coreAppPath/widget").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/widget");
+    Directory("$coreAppPath/widget").createSync(recursive: true);
   }
   // print("Create File Loading Widget $loadingFile");
   File(loadingFile).writeAsStringSync(loadingContent.replaceAll("appName", appName));
 
   // ADD SHIMMER WIDGET
-  String shimmerContent = File("$othersPath/widget/shimmer_list_widget.dart.stub").readAsStringSync();
-  String shimmerFile = "$libAppPath/widget/shimmer_list_widget.dart";
-  if (!Directory("$libAppPath/widget").existsSync()) {
-    print("CREATE FOLDER => $libAppPath/widget");
-    Directory("$libAppPath/widget").createSync(recursive: true);
+  String shimmerContent = File("$corePath/widget/shimmer_list_widget.dart.stub").readAsStringSync();
+  String shimmerFile = "$coreAppPath/widget/shimmer_list_widget.dart";
+  if (!Directory("$coreAppPath/widget").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/widget");
+    Directory("$coreAppPath/widget").createSync(recursive: true);
   }
   // print("Create File Loading Widget $loadingFile");
   File(shimmerFile).writeAsStringSync(shimmerContent);
 
   // ADD SNACKBAR WIDGET
-  String snackbarContent = File("$othersPath/widget/show_snackbar.dart.stub").readAsStringSync();
-  String snackbarFile = "$libAppPath/widget/show_snackbar.dart";
-  if (!Directory("$libAppPath/widget").existsSync()) {
-    print("CREATE FOLDER => $libAppPath/widget");
-    Directory("$libAppPath/widget").createSync(recursive: true);
+  String snackbarContent = File("$corePath/widget/show_snackbar.dart.stub").readAsStringSync();
+  String snackbarFile = "$coreAppPath/widget/show_snackbar.dart";
+  if (!Directory("$coreAppPath/widget").existsSync()) {
+    print("CREATE FOLDER => $coreAppPath/widget");
+    Directory("$coreAppPath/widget").createSync(recursive: true);
   }
   // print("Create File Loading Widget $loadingFile");
   File(snackbarFile).writeAsStringSync(snackbarContent);

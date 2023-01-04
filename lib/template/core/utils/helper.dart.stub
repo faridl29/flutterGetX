@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:appName/constants/canoncial_path.dart';
 import 'package:appName/constants/error_message.dart';
-import 'package:appName/widget/show_snackbar.dart';
+import 'package:appName/core/widget/show_snackbar.dart';
 
 vspace(double? size) {
   return SizedBox(
