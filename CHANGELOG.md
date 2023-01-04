@@ -9,3 +9,4 @@
 * fixing base architecture
 * create Base Controller
 * create Base View
+* add function fonts at pubspec.yaml
