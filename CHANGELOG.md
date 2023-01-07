@@ -10,3 +10,8 @@
 * create Base Controller
 * create Base View
 * add function fonts at pubspec.yaml
+
+## 0.0.3
+
+* fixing flavors environment
+* fixing base view app
