@@ -6,8 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:appName/constants/K.dart';
 import 'package:appName/constants/canoncial_path.dart';
-import 'package:appName/constants/env.dart';
 import 'package:appName/constants/error_message.dart';
+import 'package:appName/flavors/build_config.dart';
+import 'package:appName/flavors/environment.dart';
 import 'package:appName/app/app.dart';
 
 class ApiClient {
@@ -36,7 +37,7 @@ class ApiClient {
         ),
       );
 
-    if (EnvValue.staging.config.label == "staging"){
+    if (BuildConfig.instance.environment == Environment.STAG){
       _dio.interceptors.add(alice.getDioInterceptor());
     }
   }

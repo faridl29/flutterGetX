@@ -17,31 +17,9 @@ abstract class BaseView<Controller extends BaseController>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Stack(
-        children: [
-          annotatedRegion(context),
-          Obx(() => controller.pageState == PageState.LOADING
-              ? _showLoading()
-              : Container()),
-          Obx(() => controller.errorMessage.isNotEmpty
-              ? showSnackbar(message: controller.errorMessage)
-              : Container()),
-          Container(),
-        ],
-      ),
-    );
-  }
-
-  Widget annotatedRegion(BuildContext context) {
-    return AnnotatedRegion(
-      value: SystemUiOverlayStyle(
-        //Status bar color for android
-        statusBarColor: statusBarColor(),
-        statusBarIconBrightness: Brightness.dark,
-      ),
-      child: Material(
-        color: Colors.transparent,
+    return Container(
+      color: statusBarColor(),
+      child: SafeArea(
         child: pageScaffold(context),
       ),
     );
@@ -60,8 +38,17 @@ abstract class BaseView<Controller extends BaseController>
   }
 
   Widget pageContent(BuildContext context) {
-    return SafeArea(
-      child: body(context),
+    return Stack(
+      children: [
+        body(context),
+        Obx(() => controller.pageState == PageState.LOADING
+            ? _showLoading()
+            : Container()),
+        Obx(() => controller.errorMessage.isNotEmpty
+            ? showSnackbar(message: controller.errorMessage)
+            : Container()),
+        Container(),
+      ],
     );
   }
 

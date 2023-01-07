@@ -54,10 +54,12 @@ Future<void> main(List<String> args) async {
   String servicePath = "$libPath/template/services";
   String constantPath = "$libPath/template/constants";
   String corePath = "$libPath/template/core";
+  String flavorsPath = "$libPath/template/flavors";
   String othersPath = "$libPath/template";
   String serviceAppPath = "$appRootFolder/lib/services";
   String constantAppPath = "$appRootFolder/lib/constants";
   String coreAppPath = "$appRootFolder/lib/core";
+  String flavorsAppPath = "$appRootFolder/lib/flavors";
   String libAppPath = "$appRootFolder/lib";
   String routerAppPath = "$libAppPath/route";
   var pubSpec = jsonDecode(jsonEncode(doc));
@@ -130,7 +132,7 @@ Future<void> main(List<String> args) async {
   File(serviceFile).writeAsStringSync(serviceContent.replaceAll("appName", appName));
 
   // ADD CANONCIAL_PATH
-  String canocialContent = File("$constantPath/canoncial_path.dart").readAsStringSync();
+  String canocialContent = File("$constantPath/canoncial_path.dart.stub").readAsStringSync();
   String canoncialFile = "$constantAppPath/canoncial_path.dart";
   if (!Directory(constantAppPath).existsSync()) {
     print("CREATE FOLDER => $constantAppPath");
@@ -140,17 +142,17 @@ Future<void> main(List<String> args) async {
   File(canoncialFile).writeAsStringSync(canocialContent);
 
   // ADD ENV
-  String envContent = File("$constantPath/env.dart").readAsStringSync();
+  /*String envContent = File("$constantPath/env.dart.stub").readAsStringSync();
   String envFile = "$constantAppPath/env.dart";
   if (!Directory(constantAppPath).existsSync()) {
     print("CREATE FOLDER => $constantAppPath");
     Directory(constantAppPath).createSync(recursive: true);
   }
   print("Create File ENV $envFile");
-  File(envFile).writeAsStringSync(envContent);
+  File(envFile).writeAsStringSync(envContent);*/
 
   // ADD ERROR MESSAGE
-  String errorContent = File("$constantPath/error_message.dart").readAsStringSync();
+  String errorContent = File("$constantPath/error_message.dart.stub").readAsStringSync();
   String errorFile = "$constantAppPath/error_message.dart";
   if (!Directory(constantAppPath).existsSync()) {
     print("CREATE FOLDER => $constantAppPath");
@@ -160,14 +162,14 @@ Future<void> main(List<String> args) async {
   File(errorFile).writeAsStringSync(errorContent);
 
   // ADD K
-  String kContent = File("$constantPath/K.dart").readAsStringSync();
+  String kContent = File("$constantPath/K.dart.stub").readAsStringSync();
   String kFile = "$constantAppPath/K.dart";
   if (!Directory(constantAppPath).existsSync()) {
     print("CREATE FOLDER => $constantAppPath");
     Directory(constantAppPath).createSync(recursive: true);
   }
   print("Create File K $kFile");
-  File(kFile).writeAsStringSync(kContent);
+  File(kFile).writeAsStringSync(kContent.replaceAll("appName", appName));
 
   // ADD BASE CONTROLLER
   String baseControllerContent = File("$corePath/base/base.controller.dart.stub").readAsStringSync();
@@ -200,7 +202,7 @@ Future<void> main(List<String> args) async {
   File(modelBaseFile).writeAsStringSync(modelBaseContent);
 
   // ADD COLOR VALUES
-  String appColorContent = File("$corePath/values/app_colors.dart").readAsStringSync();
+  String appColorContent = File("$corePath/values/app_colors.dart.stub").readAsStringSync();
   String appColorFile = "$coreAppPath/values/app_colors.dart";
   if (!Directory("$coreAppPath/values").existsSync()) {
     print("CREATE FOLDER => $coreAppPath/values");
@@ -210,7 +212,7 @@ Future<void> main(List<String> args) async {
   File(appColorFile).writeAsStringSync(appColorContent);
 
   // ADD VALUES
-  String appValuesContent = File("$corePath/values/app_values.dart").readAsStringSync();
+  String appValuesContent = File("$corePath/values/app_values.dart.stub").readAsStringSync();
   String appValuesFile = "$coreAppPath/values/app_values.dart";
   if (!Directory("$coreAppPath/values").existsSync()) {
     print("CREATE FOLDER => $coreAppPath/values");
@@ -289,6 +291,36 @@ Future<void> main(List<String> args) async {
   // print("Create File Loading Widget $loadingFile");
   File(snackbarFile).writeAsStringSync(snackbarContent);
 
+  // ADD BUILD CONFIG FLAVORS
+  String buildConfigContent = File("$flavorsPath/build_config.dart.stub").readAsStringSync();
+  String buildConfigFile = "$flavorsAppPath/build_config.dart";
+  if (!Directory(flavorsAppPath).existsSync()) {
+    print("CREATE FOLDER => $flavorsAppPath");
+    Directory(flavorsAppPath).createSync(recursive: true);
+  }
+  print("Create File Build Config $buildConfigFile");
+  File(buildConfigFile).writeAsStringSync(buildConfigContent.replaceAll("appName", appName));
+
+  // ADD ENV CONFIG FLAVORS
+  String envConfigContent = File("$flavorsPath/env_config.dart.stub").readAsStringSync();
+  String envConfigFile = "$flavorsAppPath/env_config.dart";
+  if (!Directory(flavorsAppPath).existsSync()) {
+    print("CREATE FOLDER => $flavorsAppPath");
+    Directory(flavorsAppPath).createSync(recursive: true);
+  }
+  print("Create File Build Config $envConfigFile");
+  File(envConfigFile).writeAsStringSync(envConfigContent);
+
+  // ADD ENVIRONMENT FLAVORS
+  String environmentContent = File("$flavorsPath/environment.dart.stub").readAsStringSync();
+  String environmentFile = "$flavorsAppPath/environment.dart";
+  if (!Directory(flavorsAppPath).existsSync()) {
+    print("CREATE FOLDER => $flavorsAppPath");
+    Directory(flavorsAppPath).createSync(recursive: true);
+  }
+  print("Create File Build Config $environmentFile");
+  File(environmentFile).writeAsStringSync(environmentContent);
+
   // ADD MAIN DEVELOPMENT
   String mainContent = File("$othersPath/main.dart.stub").readAsStringSync();
   String mainDevelopmentFile = "$libAppPath/main_development.dart";
@@ -297,9 +329,11 @@ Future<void> main(List<String> args) async {
   print("Create File Main Development $mainDevelopmentFile");
   File(mainDevelopmentFile).writeAsStringSync(mainContent.replaceAll("appName", appName));
   print("Create File Main Staging $mainDevelopmentFile");
-  File(mainStagingFile).writeAsStringSync(mainContent.replaceAll("appName", appName).replaceAll("development", "staging"));
+  File(mainStagingFile).writeAsStringSync(mainContent.replaceAll("appName", appName)
+      .replaceAll("DEV", "STAG"));
   print("Create File Main Production $mainDevelopmentFile");
-  File(mainProductionFile).writeAsStringSync(mainContent.replaceAll("appName", appName).replaceAll("development", "production"));
+  File(mainProductionFile).writeAsStringSync(mainContent.replaceAll("appName", appName)
+      .replaceAll("DEV", "PROD"));
 
   // ADD APP
   String appContent = File("$othersPath/app.dart.stub").readAsStringSync();
