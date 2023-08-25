@@ -1,10 +1,10 @@
 name: haibarrr
 description: Haibarrr framework flutter project with GetX pattern Architecture
-version: 0.0.3
+version: 0.0.4
 homepage: https://github.com/barimans/Haibarrr-Flutter-Framework
 
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=2.18.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:

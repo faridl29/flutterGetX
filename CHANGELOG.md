@@ -15,3 +15,8 @@
 
 * fixing flavors environment
 * fixing base view app
+
+## 0.0.4
+
+* update version flutter from 3.3.1 to 3.13.0
+* fixing some issue
