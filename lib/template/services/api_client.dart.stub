@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:alice/alice.dart';
+import 'package:appName/constants/prefs_constant.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:appName/constants/K.dart';
 import 'package:appName/constants/canoncial_path.dart';
@@ -10,36 +12,52 @@ import 'package:appName/constants/error_message.dart';
 import 'package:appName/flavors/build_config.dart';
 import 'package:appName/flavors/environment.dart';
 import 'package:appName/app/app.dart';
+import 'package:appName/route/route.constant.dart';
 
 class ApiClient {
-  Dio _dio = Dio();
-  bool isAuth;
+  late Dio _dio;
+  final bool isAuth;
+  final bool isLogout;
 
-  ApiClient({this.isAuth = false}) {
-    Alice alice = Alice(navigatorKey: navigatorKey);
-
+  ApiClient({this.isAuth = false, this.isLogout = false}) {
     _dio = Dio(
       BaseOptions(
         baseUrl: isAuth ? K.baseUrlUser : K.baseUrlCore,
-        connectTimeout: 5000,
-        receiveTimeout: 3000,
+        connectTimeout: const Duration(milliseconds: 60000),
+        receiveTimeout: const Duration(milliseconds: 60000),
       ),
-    )..interceptors.add(
-        PrettyDioLogger(
-          error: true,
-          request: true,
-          requestBody: true,
-          requestHeader: true,
-          responseBody: true,
-          responseHeader: true,
-          compact: true,
-          maxWidth: 500,
-        ),
-      );
+    );
 
-    if (BuildConfig.instance.environment == Environment.STAG){
-      _dio.interceptors.add(alice.getDioInterceptor());
+    if (BuildConfig.instance.environment == Environment.STAG) {
+      _setupStagingInterceptors();
     }
+
+    if (!isAuth) {
+      _setupAuthorizationHeader();
+    }
+  }
+
+  void _setupStagingInterceptors() {
+    final Alice alice = Alice(navigatorKey: navigatorKey);
+    _dio.interceptors.add(alice.getDioInterceptor());
+    _dio.interceptors.add(PrettyDioLogger(
+      error: true,
+      request: true,
+      requestBody: false,
+      requestHeader: false,
+      responseBody: false,
+      responseHeader: false,
+      compact: false,
+      maxWidth: 500,
+    ));
+  }
+
+  void _setupAuthorizationHeader() {
+    final String token = isLogout
+        ? prefs.read(PrefsConstant.REFRESH_TOKEN)
+        : prefs.read(PrefsConstant.ACCESS_TOKEN) ?? "";
+    _dio.options.headers['content-Type'] = 'application/json';
+    _dio.options.headers['authorization'] = "Bearer $token";
   }
 
   Future<Response?> getData(
@@ -49,11 +67,6 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      String token = prefs.read("auth_token") ?? "";
-
-      _dio.options.headers['content-Type'] = 'application/json';
-      _dio.options.headers['authorization'] = token;
-
       final response = await _dio.get(
         Uri.encodeFull(endpoint),
         options: Options(headers: headers),
@@ -61,217 +74,195 @@ class ApiClient {
         queryParameters: queryParameters,
       );
       return response;
-    } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout) {
-        throw ('Connection Time Out');
-      }
-      throw (await _handleError(e));
     } catch (e) {
-      print("ERROR getData $e");
-      throw Exception(e);
+      return await _handleDioError(e);
     }
   }
 
-  Future<Response?> postData(String endpoint, dynamic data,
-      {Map<String, dynamic>? headers}) async {
+  Future<Response?> postData(
+    String endpoint,
+    dynamic data, {
+    Map<String, dynamic>? headers,
+  }) async {
     try {
-      String token = prefs.read("auth_token") ?? "";
-
-      _dio.options.headers['content-Type'] = 'application/json';
-      _dio.options.headers['authorization'] = token;
       final response = await _dio.post(
         Uri.encodeFull(endpoint),
         data: data,
         options: Options(headers: headers),
       );
       return response;
-    } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout) {
-        throw ('Connection Time Out');
-      }
-      throw (await _handleError(e));
     } catch (e) {
-      print("ERROR postData $e");
-      throw Exception(e);
+      return await _handleDioError(e);
     }
   }
 
-  Future<Response?> patchData(String endpoint, dynamic data,
-      {Map<String, dynamic>? headers}) async {
+  Future<Response?> patchData(
+    String endpoint,
+    dynamic data, {
+    Map<String, dynamic>? headers,
+  }) async {
     try {
-      String token = prefs.read("auth_token") ?? "";
-
-      _dio.options.headers['content-Type'] = 'application/json';
-      _dio.options.headers['authorization'] = token;
       final response = await _dio.patch(
         Uri.encodeFull(endpoint),
         data: data,
         options: Options(headers: headers),
       );
       return response;
-    } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout) {
-        throw ('Connection Time Out');
-      }
-      throw (await _handleError(e));
     } catch (e) {
-      print("ERROR postData $e");
-      throw Exception(e);
+      return await _handleDioError(e);
     }
   }
 
-  Future<Response?> putData(String endpoint, dynamic data,
-      {Map<String, dynamic>? headers}) async {
+  Future<Response?> putData(
+    String endpoint,
+    dynamic data, {
+    Map<String, dynamic>? headers,
+  }) async {
     try {
-      String token = prefs.read("auth_token") ?? "";
-
-      _dio.options.headers['content-Type'] = 'application/json';
-      _dio.options.headers['authorization'] = token;
       final response = await _dio.put(
         Uri.encodeFull(endpoint),
         data: data,
         options: Options(headers: headers),
       );
       return response;
-    } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout) {
-        throw ('Connection Time Out');
-      }
-      throw (await _handleError(e));
     } catch (e) {
-      print("ERROR postData $e");
-      throw Exception(e);
+      return await _handleDioError(e);
     }
   }
 
-  Future<Response> deleteData(String endpoint,
-      {Map<String, dynamic>? headers}) async {
+  Future<Response?> deleteData(
+    String endpoint,
+    dynamic data, {
+    Map<String, dynamic>? headers,
+  }) async {
     try {
-      String token = prefs.read("auth_token") ?? "";
-
-      _dio.options.headers['content-Type'] = 'application/json';
-      _dio.options.headers['authorization'] = token;
-      final response = await _dio.get(
+      final response = await _dio.delete(
         Uri.encodeFull(endpoint),
+        data: data,
         options: Options(headers: headers),
       );
       return response;
-    } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout) {
-        throw ('Connection Time Out');
-      }
-      throw (await _handleError(e));
     } catch (e) {
-      print("ERROR postData $e");
-      throw Exception(e);
+      return await _handleDioError(e);
     }
   }
 
-  Future<Response?> postMultipartData(String endpoint,
-      {Map<String, dynamic>? headers,
-      required File file,
-      required String paramName,
-      required String filename,
-      required String fileType,
-      required String type}) async {
-    final multipartData = FormData.fromMap({
-      "fileType": fileType,
-      "type": type,
-      paramName:
-      await MultipartFile.fromFile(file.path, filename: filename),
-    });
-    final formData = multipartData;
-    return postData(endpoint, formData, headers: headers);
+  Future<Response?> postMultipartData(
+    String endpoint, {
+    Map<String, dynamic>? headers,
+    required File file,
+    required String paramName,
+    required String filename,
+    required String fileType,
+    required String type,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        "fileType": fileType,
+        "type": type,
+        paramName: await MultipartFile.fromFile(file.path, filename: filename),
+      });
+      return postData(endpoint, formData, headers: headers);
+    } catch (e) {
+      return await _handleDioError(e);
+    }
   }
 
-  Future<String> _handleError(DioError e) async {
-    String errorConnection = "Failed host lookup";
-    String unreachable = "Network is unreachable";
-    if (e.error.toString().contains(errorConnection) ||
-        e.error.toString().contains(unreachable)) {
-      // Navigator.of(navigatorKey.currentContext).pushNamed(
-      //   Routes.noInternet,
-      //   arguments: NoInternetArguments(""),
-      // );
-      return "No internet connection";
-    }
-    Map<String, dynamic> err = jsonDecode(e.response.toString());
-    String msg = "Unknown Error";
-    print('error message : ${err["message"]}');
+  Future<Response?> _handleDioError(dynamic e) async {
+    if (e is DioException) {
+      if (e.type == DioExceptionType.connectionTimeout) {
+        throw ("Connection time out");
+      } else if (e.type == DioExceptionType.receiveTimeout) {
+        throw ("Pengambilan data gagal, harap coba kembali!");
+      } else if (e.type == DioExceptionType.unknown &&
+          (e.message!.contains("Failed host lookup") ||
+              e.message!.contains("Network is unreachable"))) {
+        throw ("No internet connection");
+      }
 
-    if (err == null) {
-      if (e.response == null) {
-        msg = "Unknown Error";
-        if (e.requestOptions.path.contains(CanonicalPath.LOGIN)) {
-          return CustomErrorMessage.CODE_NOT_200_LOGIN;
-        }
-        return msg;
+      final Map<String, dynamic>? err =
+          e.response?.data != null ? jsonDecode(e.response.toString()) : null;
+
+      if (err == null) {
+        throw (_handleGeneralError(e));
       }
-      if (e.response?.statusCode == 500) {
-        return CustomErrorMessage.CODE_500;
-      }
-      return e.response?.statusMessage ?? "";
+
+      throw (_handleSpecificError(e, err));
+    } else {
+      throw ("Unexpected error occurred");
     }
-    if (err.containsKey("code")) {
-      if (err["code"] == 500) {
-        if (err["message"] == "Invalid or Expired OTP Number") {
-          return CustomErrorMessage.CODE_404_OTP_NOTVALID;
-        } else if (err["message"] == "email Already Registered") {
-          return CustomErrorMessage.CODE_500_ALREADY_REGISTERED;
-        } else {
-          return CustomErrorMessage.CODE_500;
-        }
-      }
-      if (err["code"] == 401) {
-        try {
-          prefs.remove("auth_token");
-        } catch (error) {
-          // case data storage from empty
-        }
-        if (e.requestOptions.path.contains(CanonicalPath.LOGIN)) {
-          return CustomErrorMessage.CODE_401_LOGIN;
-        }
-        return CustomErrorMessage.CODE_401;
-      }
-      if (e.requestOptions.path.contains(CanonicalPath.LOGIN)) {
-        return CustomErrorMessage.CODE_NOT_200_LOGIN;
-      }
-    }
-    if (err.containsKey("errors")) {
-      var mErr = err["errors"][0];
-      if (mErr["status"] == "401") {
-        try {
-          prefs.remove("auth_token");
-        } catch (error) {
-          // case data storage from empty
-        }
-        if (e.requestOptions.path.contains(CanonicalPath.LOGIN)) {
-          return CustomErrorMessage.CODE_401_LOGIN;
-        }
-        return CustomErrorMessage.CODE_401;
-      }
-      if (mErr["status"] == "422") {
-        return mErr['detail'];
-      }
-    }
-    if (err.containsKey("message")) msg = err["message"];
-    if (err.containsKey("description")) msg = err["description"];
-    if (err.containsKey("meta")) msg = err["meta"]["message"];
-    if (msg == "OTP Number Not Valid") {
-      return CustomErrorMessage.CODE_404_OTP_NOTVALID;
-    }
-    if (msg.contains("SQLSTATE")) {
-      // debugLog(msg);
+  }
+
+  String _handleGeneralError(DioException e) {
+    if (e.response == null) {
       return "Unknown Error";
     }
-    if (msg.contains("invalid_credential")) {
-      // debugLog(msg);
-      return "Email atau password salah";
+
+    if (e.response?.statusCode == 500) {
+      return CustomErrorMessage.CODE_500;
     }
-    if (msg.contains("Unexpected end of input")) {
-      // debugLog(msg);
-      return CustomErrorMessage.SERVER_ERROR;
+
+    return e.response?.statusMessage ?? "Unknown Error";
+  }
+
+  String _handleSpecificError(DioException e, Map<String, dynamic> err) {
+    if (err.containsKey("code")) {
+      return _handleErrorCode(err);
     }
-    return msg;
+
+    if (err.containsKey("errors")) {
+      return _handleValidationError(err["errors"][0]);
+    }
+
+    if (err.containsKey("message")) {
+      return err["message"];
+    }
+
+    if (err.containsKey("description")) {
+      return err["description"];
+    }
+
+    if (err.containsKey("meta")) {
+      return err["meta"]["message"];
+    }
+
+    return "Unknown Error";
+  }
+
+  String _handleErrorCode(Map<String, dynamic> err) {
+    if (err["code"] == 500) {
+      if (err["message"] == "Invalid or Expired OTP Number") {
+        return CustomErrorMessage.CODE_404_OTP_NOTVALID;
+      } else if (err["message"] == "email Already Registered") {
+        return CustomErrorMessage.CODE_500_ALREADY_REGISTERED;
+      } else {
+        return CustomErrorMessage.CODE_500;
+      }
+    }
+
+    if (err["code"] == 401) {
+      _logout();
+      return CustomErrorMessage.CODE_401;
+    }
+
+    return "Unknown Error";
+  }
+
+  String _handleValidationError(Map<String, dynamic> mErr) {
+    if (mErr["status"] == "401") {
+      _logout();
+      return CustomErrorMessage.CODE_401;
+    }
+
+    if (mErr["status"] == "422") {
+      return mErr['detail'];
+    }
+
+    return "Unknown Error";
+  }
+
+  void _logout() {
+    prefs.erase();
+    Get.offAllNamed(RouteConstants.login);
   }
 }

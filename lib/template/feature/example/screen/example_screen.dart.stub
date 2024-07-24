@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:appName/feature/example/controller/example_controller.dart';
 import 'package:appName/core/base/base.view.dart';
 import 'package:appName/core/widget/custom_app_bar.dart';
+import 'package:get/get.dart';
 
 class ExampleScreen extends BaseView<ExampleController> {
   const ExampleScreen({super.key});
 
   @override
   PreferredSizeWidget? appBar(BuildContext context) {
-    return CustomAppBar(appBarTitleText: "Example Page");
+    return const CustomAppBar(appBarTitleText: "Example Page");
   }
 
   @override

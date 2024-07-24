@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:appName/feature/example/argument/example_argument.dart';
@@ -20,7 +17,6 @@ class ExampleController extends BaseController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     exampleArgument = Get.arguments;
     debugPrint("Example Argument => ${exampleArgument?.id}");
     // getExampleData();
